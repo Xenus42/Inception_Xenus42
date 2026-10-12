@@ -1,7 +1,11 @@
 FROM debian:bookworm
 
-RUN RUN apt-get update && \
-    apt-get install -y mariadb-server mariadb-client && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update
+
+RUN apt-get install -y mariadb-server mariadb-client
 
 COPY conf/60-inception.cnf /etc/mysql/mariadb.conf.d/60-inception.cnf
+
+COPY tools/init-db.sh /usr/local/bin/init-db.sh
+
+RUN chmod +x /usr/local/bin/init-db.sh
