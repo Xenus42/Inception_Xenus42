@@ -14,3 +14,13 @@ chown -R mysql:mysql /var/lib/mysql
 if [ ! -d "/var/lib/mysql/mysql" ]; then
     mariadb-install-db --user=mysql --datadir=/var/lib/mysql
 fi
+
+cat <<EOF > /run/mysqld/init.sql
+CREATE DATABASE IF NOT EXISTS ${MYSQL_DATABASE};
+
+CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';
+
+GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'%';
+
+FLUSH PRIVILEGES;
+EOF
