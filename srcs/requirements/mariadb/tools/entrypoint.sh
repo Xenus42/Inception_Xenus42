@@ -13,7 +13,7 @@ chown mysql:mysql /run/mysqld
 chown -R mysql:mysql /var/lib/mysql
 
 if [ ! -d "/var/lib/mysql/mysql" ]; then
-    mariadb-install-db --user=mysql --datadir=/var/lib/mysql
+    mariadb-install-db --user=mysql --datadir=/var/lib/mysql --skip-test-db
 fi
 
 cat <<EOF > /run/mysqld/init.sql
