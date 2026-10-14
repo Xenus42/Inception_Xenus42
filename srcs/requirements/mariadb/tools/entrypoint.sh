@@ -2,10 +2,10 @@
 
 set -e
 
-: "${MYSQL_DATABASE:?MYSQL_DATABASE n'est pas définie}"
-: "${MYSQL_USER:?MYSQL_USER n'est pas défini}"
-: "${MYSQL_PASSWORD:?MYSQL_PASSWORD n'est pas défini}"
-: "${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD n'est pas défini}"
+: "${MYSQL_DATABASE:?MYSQL_DATABASE is not set}"
+: "${MYSQL_USER:?MYSQL_USER is not set}"
+: "${MYSQL_PASSWORD:?MYSQL_PASSWORD is not set}"
+: "${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD is not set}"
 
 mkdir -p /run/mysqld
 chown mysql:mysql /run/mysqld
