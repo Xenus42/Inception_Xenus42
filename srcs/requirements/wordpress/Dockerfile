@@ -19,3 +19,7 @@ RUN curl -fsSL -o /tmp/wp-cli.phar \
     && php /tmp/wp-cli.phar --info \
     && chmod +x /tmp/wp-cli.phar \
     && mv /tmp/wp-cli.phar /usr/local/bin/wp
+
+RUN sed -i 's|^listen = .*|listen = 9000|' \
+    /etc/php/8.2/fpm/pool.d/www.conf    
+    
