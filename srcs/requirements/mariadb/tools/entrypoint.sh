@@ -2,10 +2,24 @@
 
 set -e
 
-: "${MYSQL_DATABASE:?MYSQL_DATABASE is not set}"
-: "${MYSQL_USER:?MYSQL_USER is not set}"
-: "${MYSQL_PASSWORD:?MYSQL_PASSWORD is not set}"
-: "${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD is not set}"
+read_secret() {
+    if [ ! -r "$1" ]; then
+        echo "MariaDB error: secret file is missing or unreadable: $1" >&2
+        exit 1
+    fi
+
+    tr -d '\r\n' < "$1"
+}
+
+MYSQL_DATABASE="$(read_secret /run/secrets/mysql_wp_database)"
+MYSQL_USER="$(read_secret /run/secrets/mysql_wp_user)"
+MYSQL_PASSWORD="$(read_secret /run/secrets/mysql_wp_password)"
+MYSQL_ROOT_PASSWORD="$(read_secret /run/secrets/mysql_root_password)"
+
+: "${MYSQL_DATABASE:?MYSQL_DATABASE secret is empty}"
+: "${MYSQL_USER:?MYSQL_USER secret is empty}"
+: "${MYSQL_PASSWORD:?MYSQL_PASSWORD secret is empty}"
+: "${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD secret is empty}"
 
 mkdir -p /run/mysqld
 chown mysql:mysql /run/mysqld
