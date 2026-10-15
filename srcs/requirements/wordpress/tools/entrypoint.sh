@@ -36,3 +36,17 @@ if ! wp core is-installed --path=/var/www/html --allow-root >/dev/null 2>&1; the
         --path=/var/www/html 
         --allow-root
 fi
+
+
+if ! wp user get "$WP_USER_NAME" --path=/var/www/html --allow-root >/dev/null 2>&1; then
+    wp user create \
+        "$WP_USER_NAME" \
+        "$WP_USER_EMAIL" \
+        --role=author \
+        --user_pass="$WP_USER_PASS" \
+        --path=/var/www/html \
+        --allow-root
+fi
+```
+exec php-fpm8.2 -F
+```
