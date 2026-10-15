@@ -23,3 +23,16 @@ if [ ! -f /var/www/html/wp-config.php ]; then
         --skip-check \
         --allow-root
 fi
+
+if ! wp core is-installed --path=/var/www/html --allow-root >/dev/null 2>&1; then
+    wp core install 
+        --url="$WP_URL" 
+        --title="$WP_SITE_TITLE" 
+        --admin_user="$WP_ADMIN_NAME" 
+        --admin_password="$WP_ADMIN_PASS" 
+        --admin_email="$WP_ADMIN_EMAIL" 
+        --locale="$LOCAL" 
+        --skip-email 
+        --path=/var/www/html 
+        --allow-root
+fi
