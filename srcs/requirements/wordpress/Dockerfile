@@ -22,4 +22,13 @@ RUN curl -fsSL -o /tmp/wp-cli.phar \
 
 RUN sed -i 's|^listen = .*|listen = 9000|' \
     /etc/php/8.2/fpm/pool.d/www.conf    
-    
+
+WORKDIR /var/www/html
+
+COPY tools/entrypoint.sh /usr/local/bin/entrypoint.sh
+
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+EXPOSE 9000
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
