@@ -11,13 +11,11 @@ read_secret() {
     tr -d '\r\n' < "$1"
 }
 
-MYSQL_DATABASE="$(read_secret /run/secrets/mysql_wp_database)"
-MYSQL_USER="$(read_secret /run/secrets/mysql_wp_user)"
 MYSQL_PASSWORD="$(read_secret /run/secrets/mysql_wp_password)"
 MYSQL_ROOT_PASSWORD="$(read_secret /run/secrets/mysql_root_password)"
 
-: "${MYSQL_DATABASE:?MYSQL_DATABASE secret is empty}"
-: "${MYSQL_USER:?MYSQL_USER secret is empty}"
+: "${MYSQL_DATABASE:?MYSQL_DATABASE is not set}"
+: "${MYSQL_USER:?MYSQL_USER is not set}"
 : "${MYSQL_PASSWORD:?MYSQL_PASSWORD secret is empty}"
 : "${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD secret is empty}"
 

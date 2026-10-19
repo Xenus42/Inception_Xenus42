@@ -2,11 +2,12 @@ services:
   mariadb:
     build:
       context: ./requirements/mariadb
-    image: inception-mariadb:bookworm
+    image: mariadb:bookworm
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:?MYSQL_DATABASE is required in .env}
+      MYSQL_USER: ${MYSQL_USER:?MYSQL_USER is required in .env}
     secrets:
       - mysql_root_password
-      - mysql_wp_database
-      - mysql_wp_user
       - mysql_wp_password
     volumes:
       - mariadb_data:/var/lib/mysql
@@ -23,22 +24,22 @@ services:
   wordpress:
     build:
       context: ./requirements/wordpress
-    image: inception-wordpress:bookworm
+    image: wordpress:bookworm
     environment:
-      LOCAL: ${LOCAL}
-      WP_DB_HOST: ${WP_DB_HOST}
-      DOMAIN_NAME: ${DOMAIN_NAME}
-      WP_SITE_TITLE: ${WP_SITE_TITLE}
+      LOCAL: ${LOCAL:?LOCAL is required in .env}
+      WP_DB_HOST: ${WP_DB_HOST:?WP_DB_HOST is required in .env}
+      DOMAIN_NAME: ${DOMAIN_NAME:?DOMAIN_NAME is required in .env}
+      WP_SITE_TITLE: ${WP_SITE_TITLE:?WP_SITE_TITLE is required in .env}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:?MYSQL_DATABASE is required in .env}
+      MYSQL_USER: ${MYSQL_USER:?MYSQL_USER is required in .env}
+      WP_ADMIN_NAME: ${WP_ADMIN_NAME:?WP_ADMIN_NAME is required in .env}
+      WP_ADMIN_EMAIL: ${WP_ADMIN_EMAIL:?WP_ADMIN_EMAIL is required in .env}
+      WP_USER_NAME: ${WP_USER_NAME:?WP_USER_NAME is required in .env}
+      WP_USER_EMAIL: ${WP_USER_EMAIL:?WP_USER_EMAIL is required in .env}
     secrets:
-      - mysql_wp_database
-      - mysql_wp_user
       - mysql_wp_password
-      - wp_admin_name
       - wp_admin_pass
-      - wp_admin_email
-      - wp_user_name
       - wp_user_pass
-      - wp_user_email
     volumes:
       - wordpress_data:/var/www/html
     networks:
@@ -51,7 +52,7 @@ services:
   nginx:
     build:
       context: ./requirements/nginx
-    image: inception-nginx:bookworm
+    image: nginx:bookworm
     ports:
       - "443:443"
     volumes:
@@ -65,24 +66,12 @@ services:
 secrets:
   mysql_root_password:
     file: ../secrets/mysql_root_password.txt
-  mysql_wp_database:
-    file: ../secrets/mysql_wp_database.txt
-  mysql_wp_user:
-    file: ../secrets/mysql_wp_user.txt
   mysql_wp_password:
     file: ../secrets/mysql_wp_password.txt
-  wp_admin_name:
-    file: ../secrets/wp_admin_name.txt
   wp_admin_pass:
     file: ../secrets/wp_admin_pass.txt
-  wp_admin_email:
-    file: ../secrets/wp_admin_email.txt
-  wp_user_name:
-    file: ../secrets/wp_user_name.txt
   wp_user_pass:
     file: ../secrets/wp_user_pass.txt
-  wp_user_email:
-    file: ../secrets/wp_user_email.txt
 
 volumes:
   mariadb_data:
