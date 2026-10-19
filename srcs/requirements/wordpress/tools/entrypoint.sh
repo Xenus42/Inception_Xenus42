@@ -83,4 +83,7 @@ if ! wp user get "$WP_USER_NAME" --path=/var/www/html --allow-root >/dev/null 2>
         --allow-root
 fi
 
+mkdir -p /var/www/html/wp-content/uploads
+chown -R www-data:www-data /var/www/html/wp-content/uploads
+
 exec php-fpm8.2 -F

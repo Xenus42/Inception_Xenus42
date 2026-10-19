@@ -3,13 +3,6 @@ services:
     build:
       context: ./requirements/mariadb
     image: inception-mariadb:bookworm
-    env_file:
-      - .env
-    environment:
-      MYSQL_DATABASE_FILE: /run/secrets/mysql_wp_database
-      MYSQL_USER_FILE: /run/secrets/mysql_wp_user
-      MYSQL_PASSWORD_FILE: /run/secrets/mysql_wp_password
-      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
     secrets:
       - mysql_root_password
       - mysql_wp_database
@@ -21,7 +14,7 @@ services:
       - inception
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "mariadb-admin", "ping", "-h", "127.0.0.1", "--silent"]
+      test: ["CMD-SHELL", "mariadb-admin ping --protocol=socket --silent 2>/dev/null"]
       interval: 5s
       timeout: 3s
       retries: 20
@@ -31,18 +24,11 @@ services:
     build:
       context: ./requirements/wordpress
     image: inception-wordpress:bookworm
-    env_file:
-      - .env
     environment:
-      MYSQL_DATABASE_FILE: /run/secrets/mysql_wp_database
-      MYSQL_USER_FILE: /run/secrets/mysql_wp_user
-      MYSQL_PASSWORD_FILE: /run/secrets/mysql_wp_password
-      WP_ADMIN_NAME_FILE: /run/secrets/wp_admin_name
-      WP_ADMIN_PASS_FILE: /run/secrets/wp_admin_pass
-      WP_ADMIN_EMAIL_FILE: /run/secrets/wp_admin_email
-      WP_USER_NAME_FILE: /run/secrets/wp_user_name
-      WP_USER_PASS_FILE: /run/secrets/wp_user_pass
-      WP_USER_EMAIL_FILE: /run/secrets/wp_user_email
+      LOCAL: ${LOCAL}
+      WP_DB_HOST: ${WP_DB_HOST}
+      DOMAIN_NAME: ${DOMAIN_NAME}
+      WP_SITE_TITLE: ${WP_SITE_TITLE}
     secrets:
       - mysql_wp_database
       - mysql_wp_user
@@ -60,6 +46,20 @@ services:
     depends_on:
       mariadb:
         condition: service_healthy
+    restart: unless-stopped
+
+  nginx:
+    build:
+      context: ./requirements/nginx
+    image: inception-nginx:bookworm
+    ports:
+      - "443:443"
+    volumes:
+      - wordpress_data:/var/www/html:ro
+    networks:
+      - inception
+    depends_on:
+      - wordpress
     restart: unless-stopped
 
 secrets:
