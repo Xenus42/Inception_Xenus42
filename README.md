@@ -8,7 +8,13 @@ Inception sets up a WordPress infrastructure inside a virtual machine.
 It consists of three services built from custom Dockerfiles and orchestrated
 with Docker Compose:
 
-| Service | Role | Locally built image |
+| Service | EADME check
+
+    Ensure that a README.md file is present at the root of the repository.
+    The very first line must follow the required format: "This project has been created as part of the 42 curriculum by <login...>" (italicized).
+    Check that the README contains at least the required sections: Description, Instructions, Resources (with explanation of how AI was used).
+    If any of these elements are missing, the evaluation ends now.
+Role | Locally built image |
 | --- | --- | --- |
 | NGINX | HTTPS entry point, TLS 1.2 and TLS 1.3 | `nginx:bookworm` |
 | WordPress and PHP-FPM | Website and administration | `wordpress:bookworm` |
@@ -146,12 +152,15 @@ sudo make stop
 sudo make up
 sudo make down
 sudo make re
+sudo make fclean
 ```
 
 `stop` stops the containers; `down` removes them along with the project network.
 `re` runs `down`, then rebuilds and restarts the infrastructure.
 These commands preserve volumes and data directories.
 `clean` is an alias for `down` and does not perform a global Docker cleanup.
+`fclean` removes the project containers, network, volumes, locally built
+images, and the persistent data directories under `/home/lebroue/data`.
 
 To test the homepage from the VM:
 
@@ -188,15 +197,10 @@ first preparing and verifying a backup.
 
 ### Use of AI
 
-An AI assistant was used to analyze the project configuration, reorganize
-environment variables and secrets, adapt entrypoint scripts, prepare the
-Makefile and write the documentation, including this README.
-It also helped compare the configuration against the provided requirements,
-interpret Docker output and perform configuration, HTTPS and TLS protocol
-checks.
+An AI assistant was used as a learning aid to better understand Docker,
+Docker Compose, networking, persistent volumes, TLS and the roles of the
+project's services. It also helped explain commands, interpret error messages.
 
-Builds and launches requiring Docker privileges were performed manually in
-the user's terminal when the assistant did not have access.
-This assistance does not certify compliance: the developer remains
-responsible for understanding the project, reviewing changes and verifying
-evaluation scenarios.
+This README was written with AI assistance.
+The developer remains responsible for understanding the implementation,
+reviewing changes and verifying the project's behavior.

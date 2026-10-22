@@ -26,6 +26,8 @@ sudo make up
 `make stop` stops the containers without removing them.
 `make down` removes the containers and the project network but preserves
 volumes and data. `make re` rebuilds the images and recreates the containers.
+`sudo make fclean` resets the project by removing its containers, network,
+volumes, locally built images and persistent data.
 
 The commands use `sudo` if your account cannot access the Docker daemon
 directly.
@@ -86,6 +88,6 @@ Exiting the log display with `Ctrl+C` does not stop the services.
 
 The database is stored in `/home/lebroue/data/mariadb`, and website files
 are stored in `/home/lebroue/data/wordpress`. This data persists after
-`make stop`, `make down`, `make clean` and `make re`.
-The Makefile targets do not delete data or images.
+`make stop`, `make down`, `make clean` and `make re`, but is deleted by
+`sudo make fclean`.
 Back up the database and website files before any destructive operation.

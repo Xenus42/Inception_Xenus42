@@ -6,7 +6,7 @@ DATA_DIR := /home/lebroue/data
 SERVICE ?= wordpress
 SECRET_NAMES := mysql_root_password mysql_wp_password wp_admin_pass wp_user_pass
 
-.PHONY: all check build up stop down re clean ps logs shell
+.PHONY: all check build up stop down re clean fclean ps logs shell db
 
 all: build
 	mkdir -p $(DATA_DIR)/mariadb $(DATA_DIR)/wordpress
@@ -38,6 +38,10 @@ re:
 
 clean: down
 
+fclean:
+	$(COMPOSE) down --volumes --rmi all --remove-orphans
+	sudo rm -rf -- $(DATA_DIR)/mariadb $(DATA_DIR)/wordpress
+
 ps:
 	$(COMPOSE) ps -a
 
@@ -46,3 +50,7 @@ logs:
 
 shell:
 	$(COMPOSE) exec $(SERVICE) sh
+
+db:
+	sudo docker compose -f srcs/docker-compose.yml exec mariadb \
+  mariadb -u root -p
