@@ -1,0 +1,95 @@
+services:
+  mariadb:
+    build:
+      context: ./requirements/mariadb
+    image: mariadb:bookworm
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:?MYSQL_DATABASE is required in .env}
+      MYSQL_USER: ${MYSQL_USER:?MYSQL_USER is required in .env}
+    secrets:
+      - mysql_root_password
+      - mysql_wp_password
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - inception
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping --protocol=socket --silent 2>/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 30s
+
+  wordpress:
+    build:
+      context: ./requirements/wordpress
+    image: wordpress:bookworm
+    environment:
+      LOCAL: ${LOCAL:?LOCAL is required in .env}
+      WP_DB_HOST: ${WP_DB_HOST:?WP_DB_HOST is required in .env}
+      DOMAIN_NAME: ${DOMAIN_NAME:?DOMAIN_NAME is required in .env}
+      WP_SITE_TITLE: ${WP_SITE_TITLE:?WP_SITE_TITLE is required in .env}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:?MYSQL_DATABASE is required in .env}
+      MYSQL_USER: ${MYSQL_USER:?MYSQL_USER is required in .env}
+      WP_ADMIN_NAME: ${WP_ADMIN_NAME:?WP_ADMIN_NAME is required in .env}
+      WP_ADMIN_EMAIL: ${WP_ADMIN_EMAIL:?WP_ADMIN_EMAIL is required in .env}
+      WP_USER_NAME: ${WP_USER_NAME:?WP_USER_NAME is required in .env}
+      WP_USER_EMAIL: ${WP_USER_EMAIL:?WP_USER_EMAIL is required in .env}
+    secrets:
+      - mysql_wp_password
+      - wp_admin_pass
+      - wp_user_pass
+    volumes:
+      - wordpress_data:/var/www/html
+    networks:
+      - inception
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    restart: unless-stopped
+
+  nginx:
+    build:
+      context: ./requirements/nginx
+    image: nginx:bookworm
+    environment:
+      DOMAIN_NAME: ${DOMAIN_NAME:?DOMAIN_NAME is required in .env}
+    ports:
+      - "443:443"
+    volumes:
+      - wordpress_data:/var/www/html:ro
+    networks:
+      - inception
+    depends_on:
+      - wordpress
+    restart: unless-stopped
+
+secrets:
+  mysql_root_password:
+    file: ../secrets/mysql_root_password.txt
+  mysql_wp_password:
+    file: ../secrets/mysql_wp_password.txt
+  wp_admin_pass:
+    file: ../secrets/wp_admin_pass.txt
+  wp_user_pass:
+    file: ../secrets/wp_user_pass.txt
+
+volumes:
+  mariadb_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/lebroue/data/mariadb
+
+  wordpress_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/lebroue/data/wordpress
+
+networks:
+  inception:
+    driver: bridge
